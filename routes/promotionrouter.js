@@ -7,6 +7,8 @@ const promotionRouter = express.Router();
 
 promotionRouter.use(bodyParser.json());
 
+
+
 promotionRouter.route('/')
     .get((req, res, next) => {
         Promotions.find({})
