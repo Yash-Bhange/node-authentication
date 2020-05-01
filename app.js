@@ -19,8 +19,11 @@ var FileStore = require('session-file-store')(session);
 var passport = require('passport');
 var authenticate = require('./authenticate');
 
+var config = require('./config.js');
+
 
 var app = express();
+
 
 
 
@@ -50,20 +53,13 @@ app.use(express.urlencoded({ extended: false }));
 
 //app.use(cookieParser('12345-67890-09876-54321')); //using signed cookie parser
 
-app.use(session({
-    name: 'session-id',
-    secret: '12345-67890-09876-54321',
-    saveUninitialized: false,
-    resave: false,
-    store: new FileStore()
-})); // we are using session not cookie
 
 
 
 
 
 app.use(passport.initialize());
-app.use(passport.session());
+
 
 
 
@@ -72,20 +68,6 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 
-function auth(req, res, next) {
-    console.log(req.user);
-
-    if (!req.user) {
-        var err = new Error('You are not authenticated!');
-        err.status = 403;
-        next(err);
-    } else {
-        next();
-    }
-}
-
-
-app.use(auth);
 
 
 
