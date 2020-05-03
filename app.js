@@ -25,6 +25,15 @@ var config = require('./config.js');
 var app = express();
 
 
+app.all('*', (req, res, next) => {
+    if (req.secure) {
+        next();
+    } else {
+        res.redirect(307, 'https://' + req.hostname + ':' + app.get('secPort') + req.url);
+    }
+
+});
+
 
 
 
