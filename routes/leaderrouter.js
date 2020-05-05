@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const Leaders = require('../models/leaders');
+const cors = require('./cors');
 
 const leaderRouter = express.Router();
 
@@ -9,7 +10,8 @@ leaderRouter.use(bodyParser.json());
 var authenticate = require('../authenticate');
 
 leaderRouter.route('/')
-    .get((req, res, next) => {
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors, (req, res, next) => {
         Leaders.find({})
             .then((lea) => {
                 console.log(lea);
@@ -21,7 +23,7 @@ leaderRouter.route('/')
 
         //console.log("get accepted");
     })
-    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.create(req.body)
             .then((lea) => {
                 console.log("dish created :" + lea);
@@ -32,11 +34,11 @@ leaderRouter.route('/')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end('PUT operation not supported on /leaders');
     })
-    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.remove({})
             .then((response) => {
                 console.log("All deleted bruh");
@@ -50,7 +52,8 @@ leaderRouter.route('/')
 // i have made another route  bruh;
 
 leaderRouter.route('/:leaId')
-    .get((req, res, next) => {
+    .options(cors.corsWithOptions, (req, res) => { res.sendStatus(200); })
+    .get(cors.cors, (req, res, next) => {
         Leaders.findById(req.params.leaId)
             .then((lea) => {
                 console.log(lea);
@@ -60,11 +63,11 @@ leaderRouter.route('/:leaId')
             }, (err) => next(err))
             .catch((err) => next(err));
     })
-    .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .post(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         res.statusCode = 403;
         res.end('POST operation not supported on /Leaders/' + req.params.leaId);
     })
-    .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .put(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndUpdate(req.params.leaId, { $set: req.body }, { new: true })
             .then((lea) => {
                 console.log("promotion created :" + lea);
@@ -76,7 +79,7 @@ leaderRouter.route('/:leaId')
             .catch((err) => next(err));
 
     })
-    .delete(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
+    .delete(cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
         Leaders.findByIdAndRemove(req.params.leaId)
             .then((response) => {
                 console.log(" deleted bruh");
